@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:worm_indicator/shape.dart';
 import 'package:worm_indicator/worm_indicator.dart';
 
@@ -19,7 +21,8 @@ class reportABugState extends StatefulWidget{
 
 class reportABug extends State<reportABugState>{
 
-  TextEditingController nameController;
+  TextEditingController nameController = new TextEditingController();
+  TextEditingController info = new TextEditingController();
 
 
 
@@ -27,9 +30,7 @@ class reportABug extends State<reportABugState>{
   @override
   void initState() {
     super.initState();
-    nameController = TextEditingController();
   }
-
 
 
 
@@ -95,7 +96,7 @@ class reportABug extends State<reportABugState>{
                     Container(
                       padding: EdgeInsets.only(left: 30,right: 30),
                       child: TextField(
-
+                        controller: nameController,
                         textAlign: TextAlign.left,
                         decoration: new InputDecoration(
                             hoverColor: Colors.orange,
@@ -123,6 +124,7 @@ class reportABug extends State<reportABugState>{
                     Container(
                       padding: EdgeInsets.only(left: 30,right: 30),
                       child: TextField(
+                        controller: info,
                         keyboardType: TextInputType.multiline,
                         maxLines: null,
                         textAlign: TextAlign.left,
@@ -156,7 +158,13 @@ class reportABug extends State<reportABugState>{
                             color: Colors.deepOrange,
 
                             onPressed: (){
-                              Navigator.of(context).pop();
+                              Firestore.instance.collection('reportABug').document(nameController.text).setData({'description' : info.text});
+
+                              Fluttertoast.showToast(
+                                  msg: "Thank you for the feedback",
+                                  backgroundColor: Colors.white,
+                                  textColor: Colors.black
+                              );
                             }
                         ),
                       )

@@ -171,13 +171,6 @@ class signInState extends State<signIn>{
                         );
                       }
 
-
-
-
-
-
-
-
                   }
                   );
 

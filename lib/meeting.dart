@@ -1,16 +1,60 @@
 
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'eventOrService.dart';
 
-class meeting extends StatelessWidget{
 
+class meeting extends StatefulWidget{
 
   @override
+  meetingState createState() => meetingState();
+
+
+}
+
+class meetingState extends State<meeting>{
+
+  int x = 0;
+
+  String date = 'Loading';
+  String location = 'Loading';
+  int members = 0;
+  int membersPresent = 0;
+  int membersSigned = 0;
+  int membersAbsent = 0;
+
+  
+  @override
   Widget build(BuildContext context) {
-    // TODO: implement build
+
+    Firestore.instance.collection('meeting').document('meetingInfo')
+        .get().then((DocumentSnapshot) {
+
+      setState(() {
+        date = DocumentSnapshot.data['date'].toString();
+        location = DocumentSnapshot.data['location'].toString();
+      });
+
+    }
+    );
+
+    Firestore.instance.collection('meeting').document('membersInfo')
+        .get().then((DocumentSnapshot) {
+
+      setState(() {
+        members = DocumentSnapshot.data['totalMembers'];
+        membersPresent = DocumentSnapshot.data['membersPresent'];
+        membersSigned = DocumentSnapshot.data['membersSignedUp'];
+        membersAbsent= members-membersPresent;
+      });
+
+    }
+    );
+
+
     return Scaffold(
       body: ListView(
 
@@ -82,13 +126,13 @@ class meeting extends StatelessWidget{
 
                       Container(
                         padding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                        child: Text('Date of Next Meet',style: TextStyle(fontSize: 30, color: Colors.white,)),
+                        child: Text(date,style: TextStyle(fontSize: 30, color: Colors.white,)),
                       ),
 
 
                       Container(
                         padding: EdgeInsets.only(left: 20, right: 20),
-                        child: Text('Location of Next Meet',style: TextStyle(fontSize: 30, color: Colors.white,)),
+                        child: Text(location,style: TextStyle(fontSize: 30, color: Colors.white,)),
                       )
 
                     ],
@@ -112,7 +156,7 @@ class meeting extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Total Members', style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),),
-                Text('100', style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
+                Text(members.toString(), style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
 
               ],
             ),
@@ -136,7 +180,7 @@ class meeting extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Members Present', style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),),
-                Text('64', style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
+                Text(membersPresent.toString(), style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
 
               ],
             ),
@@ -157,7 +201,7 @@ class meeting extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Members Absent', style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),),
-                Text('36', style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
+                Text(membersAbsent.toString(), style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
 
               ],
             ),
@@ -178,7 +222,7 @@ class meeting extends StatelessWidget{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('Members signed up for Competition', style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),),
-                Text('69', style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
+                Text(membersSigned.toString(), style: TextStyle(fontSize: 20, color: Colors.deepOrange, fontWeight: FontWeight.bold),),
 
               ],
             ),
@@ -203,7 +247,27 @@ class meeting extends StatelessWidget{
             padding: EdgeInsets.only(left: 30, right: 30),
             height: 55.0,
             child: RaisedButton(
-              onPressed: () {},
+              onPressed: () {
+
+                if( x ==0 ){
+
+                  Firestore.instance.collection('meeting').document('membersInfo')
+                      .get().then((DocumentSnapshot) {
+
+                    int random = DocumentSnapshot.data['membersPresent'];
+                    Firestore.instance.collection('meeting').document('membersInfo').updateData({ 'membersPresent' : random+1});
+                    setState(() {
+                      x++;
+                      membersAbsent - 1;
+                    });
+
+                  }
+                  );
+
+
+                }
+
+              },
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(80.0)),
               padding: EdgeInsets.all(0.0),
               child: Ink(
@@ -243,6 +307,7 @@ class meeting extends StatelessWidget{
       ),
     );
   }
+
 
 
 

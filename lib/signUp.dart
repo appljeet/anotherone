@@ -174,8 +174,15 @@ class signUpState extends State<signUp>{
 
                 print(firstNameController.text);
 
+
+
+
                 if(dropdownValue == 'Member'){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => bottomNavState()),);
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => bottomNavState()),);
+
+
+
                 }else{
                   Navigator.push(context, MaterialPageRoute(builder: (context) => adviserBottomNavState()),);
                 }
